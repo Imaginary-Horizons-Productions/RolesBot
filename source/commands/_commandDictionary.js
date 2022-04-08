@@ -1,4 +1,4 @@
-const CommandSet = require('../../classes/CommandSet.js');
+const CommandSet = require('../classes/CommandSet.js');
 
 // A maximum of 25 command sets are supported by /commands to conform with MessageEmbed limit of 25 fields
 exports.commandSets = [
