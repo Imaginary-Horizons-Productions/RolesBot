@@ -7,5 +7,8 @@ A modern light-weight bot for allowing server members to select their own roles.
 ## Features
 {features}
 
+## Features
+{features}
+
 ## Sponsors
 <!-- sponsors --><!-- sponsors -->
