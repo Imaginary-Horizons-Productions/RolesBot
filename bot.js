@@ -3,8 +3,7 @@ const { Client } = require("discord.js");
 const { REST } = require("@discordjs/rest");
 const { Routes } = require("discord-api-types/v9");
 
-const IS_PRODUCTION = true;
-const { getCommand, slashData } = require("./source/commands/_commandDictionary.js").injectConfigCommands(IS_PRODUCTION);
+const { getCommand, slashData } = require("./source/commands/_commandDictionary.js");
 const { getButton } = require("./source/buttons/_buttonDictionary.js");
 const { getSelect } = require("./source/selects/_selectDictionary.js");
 const { SAFE_DELIMITER } = require("./source/helpers.js");
@@ -20,15 +19,15 @@ const client = new Client({
 		}]
 	},
 	intents: ["GUILDS", "GUILD_MEMBERS"]
-})
+});
 
-	(() => {
-		try {
-			client.login(require("./config/auth.json").token);
-		} catch (rejectMessage) {
-			console.error(rejectMessage);
-		}
-	})()
+(() => {
+	try {
+		client.login(require("./config/auth.json").token);
+	} catch (rejectMessage) {
+		console.error(rejectMessage);
+	}
+})()
 //#endregion
 
 //#region Event Handlers
@@ -67,5 +66,9 @@ client.on("interactionCreate", interaction => {
 		const [customId, ...args] = interaction.customId.split(SAFE_DELIMITER);
 		getSelect(customId).execute(interaction, args);
 	}
+})
+
+client.on("guildCreate", guild => {
+	//TODO finish
 })
 //#endregion

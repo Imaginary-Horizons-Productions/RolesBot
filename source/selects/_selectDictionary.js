@@ -1,4 +1,6 @@
 const selectWhitelist = [
+	"add-roles.js",
+	"remove-roles.js"
 ];
 
 const selectDictionary = {};
