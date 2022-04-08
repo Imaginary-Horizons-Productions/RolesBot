@@ -68,7 +68,7 @@ exports.rolesMessagePayload = async function (rolesManager, guildId) {
 				...slicedRoles.map((ids, index) => {
 					return new MessageActionRow().addComponents(
 						new MessageSelectMenu().setCustomId(`add-roles${exports.SAFE_DELIMITER}${index}`)
-							.setPlaceholder(ids.length ? "Select roles to gain..." : "No roles set yet")
+							.setPlaceholder(ids.length ? "➕ Select roles to gain..." : "No roles set yet")
 							.setDisabled(ids.length < 1)
 							.setMinValues(1)
 							.setMaxValues(ids.length || 1)
@@ -78,7 +78,7 @@ exports.rolesMessagePayload = async function (rolesManager, guildId) {
 				...slicedRoles.map((ids, index) => {
 					return new MessageActionRow().addComponents(
 						new MessageSelectMenu().setCustomId(`remove-roles${exports.SAFE_DELIMITER}${index}`)
-							.setPlaceholder(ids.length ? "Select roles to remove..." : "No roles set yet")
+							.setPlaceholder(ids.length ? "➖ Select roles to remove..." : "No roles set yet")
 							.setDisabled(ids.length < 1)
 							.setMinValues(1)
 							.setMaxValues(ids.length || 1)

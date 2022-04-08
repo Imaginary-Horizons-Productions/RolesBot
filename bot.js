@@ -47,6 +47,7 @@ client.on("ready", () => {
 })
 
 client.on("interactionCreate", interaction => {
+	//TODO reject dms
 	if (interaction.isCommand()) {
 		const command = getCommand(interaction.commandName);
 		if (!command.managerCommand || !interaction.member.manageable) {
