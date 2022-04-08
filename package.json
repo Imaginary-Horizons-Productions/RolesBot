@@ -1,6 +1,6 @@
 {
 	"scripts": {
-		"start": "node upload_commands.js && node bot.js"
+		"start": "node upload_commands.js && node index.js"
 	},
 	"dependencies": {
 		"@discordjs/builders": "^0.12.0",
