@@ -1,0 +1,1 @@
+exports.SAFE_DELIMITER = "→";
