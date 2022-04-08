@@ -1,6 +1,6 @@
-const Select = require('../../classes/Select.js');
+const Select = require('../classes/Select.js');
 
-module.exports = new Select("add-roles");
+module.exports = new Select("remove-roles");
 
 module.exports.execute = (interaction, [page]) => {
 	// Give the user the roles selected

@@ -1,4 +1,4 @@
-const Select = require('../../classes/Select.js');
+const Select = require('../classes/Select.js');
 
 module.exports = new Select("add-roles");
 

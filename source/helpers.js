@@ -32,45 +32,42 @@ exports.rolesMessagePayload = async function (rolesManager, guildId) {
 	if (roles.length > 25) {
 		slicedRoles.push(roles.slice(25, 50));
 	}
-	let roleOptions = [];
-	slicedRoles.forEach(async ids => {
+	return Promise.all(slicedRoles.map(async ids => {
 		if (ids.length) {
-			roleOptions.push((await Promise.all(
-				ids.map(async id => {
-					return {
-						label: (await rolesManager.fetch(id)).name,
-						description: "",
-						value: id
-					}
-				})
-			)))
+			return await Promise.all(ids.map(async id => {
+				return {
+					label: (await rolesManager.fetch(id)).name,
+					value: id
+				}
+			}));
 		} else {
-			roleOptions.push([{ label: "Placeholder", description: "If the select is stuck open, try reloading Discord.", value: "placeholder" }])
+			return [{ label: "Placeholder", description: "If the select is stuck open, try reloading Discord.", value: "placeholder" }];
+		}
+	})).then(roleOptions => {
+		return {
+			content: "Use the following select menus to modify your roles:",
+			components: [
+				...slicedRoles.map((ids, index) => {
+					return new MessageActionRow().addComponents(
+						new MessageSelectMenu().setCustomId(`add-roles${exports.SAFE_DELIMITER}${index}`)
+							.setPlaceholder(ids.length ? "Select roles to gain..." : "No roles set yet")
+							.setDisabled(ids.length < 1)
+							.setMinValues(1)
+							.setMaxValues(ids.length || 1)
+							.setOptions(roleOptions[index])
+					)
+				}),
+				...slicedRoles.map((ids, index) => {
+					return new MessageActionRow().addComponents(
+						new MessageSelectMenu().setCustomId(`remove-roles${exports.SAFE_DELIMITER}${index}`)
+							.setPlaceholder(ids.length ? "Select roles to remove..." : "No roles set yet")
+							.setDisabled(ids.length < 1)
+							.setMinValues(1)
+							.setMaxValues(ids.length || 1)
+							.setOptions(roleOptions[index])
+					)
+				})
+			]
 		}
 	})
-	return {
-		content: "Use the following select menus to modify your roles:",
-		components: [
-			...slicedRoles.map((ids, index) => {
-				return new MessageActionRow().addComponents(
-					new MessageSelectMenu().setCustomId(`add-roles${exports.SAFE_DELIMITER}${index}`)
-						.setPlaceholder(ids.length ? "Select roles to gain..." : "No roles set yet")
-						.setDisabled(ids.length < 1)
-						.setMinValues(1)
-						.setMaxValues(ids.length || 1)
-						.setOptions(roleOptions[index])
-				)
-			}),
-			...slicedRoles.map((ids, index) => {
-				return new MessageActionRow().addComponents(
-					new MessageSelectMenu().setCustomId(`remove-roles${exports.SAFE_DELIMITER}${index}`)
-						.setPlaceholder(ids.length ? "Select roles to remove..." : "No roles set yet")
-						.setDisabled(ids.length < 1)
-						.setMinValues(1)
-						.setMaxValues(ids.length || 1)
-						.setOptions(roleOptions[index])
-				)
-			})
-		]
-	}
 }
