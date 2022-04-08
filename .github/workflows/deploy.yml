@@ -13,7 +13,7 @@ jobs:
       - name: Generate Sponsors 💖
         uses: JamesIves/github-sponsors-readme-action@1.0.5
         with:
-          token: ${{ secrets.SECRET_WITH_SPONSORS_ACCESS }}
+          token: ${{ secrets.SPONSORS_NTSENG }}
           file: 'README.md'
           minimum: 2500
 

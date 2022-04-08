@@ -47,25 +47,28 @@ client.on("ready", () => {
 })
 
 client.on("interactionCreate", interaction => {
-	//TODO reject dms
-	if (interaction.isCommand()) {
-		const command = getCommand(interaction.commandName);
-		if (!command.managerCommand || !interaction.member.manageable) {
-			command.execute(interaction);
-		} else {
-			interaction.reply(`The \`/${interaction.commandName}\` command is restricted to bot managers (users with permissions above the bot).`)
-				.catch(console.error);
+	if (interaction.inGuild()) {
+		if (interaction.isCommand()) {
+			const command = getCommand(interaction.commandName);
+			if (!command.managerCommand || !interaction.member.manageable) {
+				command.execute(interaction);
+			} else {
+				interaction.reply(`The \`/${interaction.commandName}\` command is restricted to bot managers (users with permissions above the bot).`)
+					.catch(console.error);
+			}
 		}
-	}
 
-	if (interaction.isButton()) {
-		const [customId, ...args] = interaction.customId.split(SAFE_DELIMITER);
-		getButton(customId).execute(interaction, args);
-	}
+		if (interaction.isButton()) {
+			const [customId, ...args] = interaction.customId.split(SAFE_DELIMITER);
+			getButton(customId).execute(interaction, args);
+		}
 
-	if (interaction.isSelectMenu()) {
-		const [customId, ...args] = interaction.customId.split(SAFE_DELIMITER);
-		getSelect(customId).execute(interaction, args);
+		if (interaction.isSelectMenu()) {
+			const [customId, ...args] = interaction.customId.split(SAFE_DELIMITER);
+			getSelect(customId).execute(interaction, args);
+		}
+	} else {
+		interaction.reply({ content: "There are no roles to adjust in private messages.", ephemeral: true });
 	}
 })
-//#endregion
+	//#endregion
