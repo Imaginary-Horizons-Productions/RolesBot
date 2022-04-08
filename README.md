@@ -20,5 +20,8 @@ Here's a quick rundown of RolesBot's features:
 ## Features
 {features}
 
+## Features
+{features}
+
 ## Sponsors
 <!-- sponsors --><!-- sponsors -->
