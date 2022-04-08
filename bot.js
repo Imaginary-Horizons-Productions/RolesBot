@@ -67,8 +67,4 @@ client.on("interactionCreate", interaction => {
 		getSelect(customId).execute(interaction, args);
 	}
 })
-
-client.on("guildCreate", guild => {
-	//TODO finish
-})
 //#endregion

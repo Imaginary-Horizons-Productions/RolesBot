@@ -25,6 +25,19 @@ exports.setRole = function (guildId, roleId) {
 	})
 }
 
+exports.deleteRole = function (guildId, roleId) {
+	if (ROLES_WHITELISTS[guildId]) {
+		ROLES_WHITELISTS[guildId] = ROLES_WHITELISTS[guildId].filter(id => id !== roleId);
+		if (!fs.existsSync("./saves")) {
+			fs.mkdirSync("./saves", { recursive: true });
+		}
+		fs.writeFile("./saves/rolesWhitelist.json", JSON.stringify(ROLES_WHITELISTS), "utf8", error => {
+			if (error) {
+				console.error(error);
+			}
+		})
+	}
+};
 
 exports.rolesMessagePayload = async function (rolesManager, guildId) {
 	let roles = exports.getRoles(guildId);
@@ -34,12 +47,17 @@ exports.rolesMessagePayload = async function (rolesManager, guildId) {
 	}
 	return Promise.all(slicedRoles.map(async ids => {
 		if (ids.length) {
-			return await Promise.all(ids.map(async id => {
-				return {
-					label: (await rolesManager.fetch(id)).name,
-					value: id
+			return ids.reduce(async (options, id) => {
+				let role = await rolesManager.fetch(id);
+				if (role) {
+					return (await options).concat({
+						label: role.name,
+						value: id
+					})
+				} else {
+					return await options;
 				}
-			}));
+			}, []);
 		} else {
 			return [{ label: "Placeholder", description: "If the select is stuck open, try reloading Discord.", value: "placeholder" }];
 		}
