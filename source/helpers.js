@@ -80,6 +80,7 @@ exports.rolesMessagePayload = async function (rolesManager, guildId) {
 						value: id
 					})
 				} else {
+					exports.deleteRole(guildId, id);
 					return await options;
 				}
 			}, []);
@@ -90,24 +91,24 @@ exports.rolesMessagePayload = async function (rolesManager, guildId) {
 		return {
 			content: `Use the following select menus to modify your roles. Available roles are: \n<@&${roles.join(">, <@&")}>`,
 			components: [
-				...slicedRoles.map((ids, index) => {
+				...roleOptions.map((optionSet, index) => {
 					return new MessageActionRow().addComponents(
 						new MessageSelectMenu().setCustomId(`add-roles${exports.SAFE_DELIMITER}${index}`)
-							.setPlaceholder(ids.length ? "➕ Select role(s) to gain..." : "No roles set yet")
-							.setDisabled(ids.length < 1)
+							.setPlaceholder(optionSet.length ? "➕ Select role(s) to gain..." : "No roles set yet")
+							.setDisabled(optionSet.length < 1)
 							.setMinValues(1)
-							.setMaxValues(ids.length || 1)
-							.setOptions(roleOptions[index])
+							.setMaxValues(optionSet.length || 1)
+							.setOptions(optionSet)
 					)
 				}),
-				...slicedRoles.map((ids, index) => {
+				...roleOptions.map((optionSet, index) => {
 					return new MessageActionRow().addComponents(
 						new MessageSelectMenu().setCustomId(`remove-roles${exports.SAFE_DELIMITER}${index}`)
-							.setPlaceholder(ids.length ? "➖ Select role(s) to remove..." : "No roles set yet")
-							.setDisabled(ids.length < 1)
+							.setPlaceholder(optionSet.length ? "➖ Select role(s) to remove..." : "No roles set yet")
+							.setDisabled(optionSet.length < 1)
 							.setMinValues(1)
-							.setMaxValues(ids.length || 1)
-							.setOptions(roleOptions[index])
+							.setMaxValues(optionSet.length || 1)
+							.setOptions(optionSet)
 					)
 				})
 			]
