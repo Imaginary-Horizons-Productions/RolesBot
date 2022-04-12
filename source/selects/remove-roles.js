@@ -7,6 +7,11 @@ module.exports.execute = (interaction, [page]) => {
 	if (interaction.member.manageable) {
 		let removed = interaction.values;
 		interaction.member.roles.remove(removed);
+		if (interaction.message.flags.has("EPHEMERAL")) {
+			interaction.update({ content: `Roles removed: <@&${removed.join(">, <@&")}>`, components: [], ephemeral: true });
+		} else {
+			interaction.reply({ content: `Roles removed: <@&${removed.join(">, <@&")}>`, ephemeral: true });
+		}
 		interaction.reply({ content: `Roles removed: <@&${removed.join(">, <@&")}>`, ephemeral: true });
 		//TODO update public roles message
 	} else {
