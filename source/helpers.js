@@ -5,10 +5,22 @@ exports.SAFE_DELIMITER = "→";
 
 const ROLES_WHITELISTS = require("./../saves/rolesWhitelist.json"); // { guildId: [roleId1, roleId2...]}
 
+/**
+ * Get the ids of roles whitelisted by the guild
+ *
+ * @param {string} guildId
+ * @returns {string[]}
+ */
 exports.getRoles = function (guildId) {
 	return ROLES_WHITELISTS[guildId] || [];
 }
 
+/**
+ * Add a role to a guild's whitelist
+ *
+ * @param {string} guildId
+ * @param {string} roleId
+ */
 exports.setRole = function (guildId, roleId) {
 	if (ROLES_WHITELISTS[guildId]) {
 		ROLES_WHITELISTS[guildId].push(roleId);
@@ -25,6 +37,12 @@ exports.setRole = function (guildId, roleId) {
 	})
 }
 
+/**
+ * Remove a role from a guild's whitelist
+ *
+ * @param {string} guildId
+ * @param {string} roleId
+ */
 exports.deleteRole = function (guildId, roleId) {
 	if (ROLES_WHITELISTS[guildId]) {
 		ROLES_WHITELISTS[guildId] = ROLES_WHITELISTS[guildId].filter(id => id !== roleId);
@@ -39,6 +57,13 @@ exports.deleteRole = function (guildId, roleId) {
 	}
 };
 
+/**
+ * Get the payload for the roles message for the given guild
+ *
+ * @param {RoleManager} rolesManager
+ * @param {string} guildId
+ * @returns {MessagePayload}
+ */
 exports.rolesMessagePayload = async function (rolesManager, guildId) {
 	let roles = exports.getRoles(guildId);
 	let slicedRoles = [roles.slice(0, 25)];
@@ -63,12 +88,12 @@ exports.rolesMessagePayload = async function (rolesManager, guildId) {
 		}
 	})).then(roleOptions => {
 		return {
-			content: "Use the following select menus to modify your roles:",
+			content: `Use the following select menus to modify your roles. Available roles are: \n<@&${roles.join(">, <@&")}>`,
 			components: [
 				...slicedRoles.map((ids, index) => {
 					return new MessageActionRow().addComponents(
 						new MessageSelectMenu().setCustomId(`add-roles${exports.SAFE_DELIMITER}${index}`)
-							.setPlaceholder(ids.length ? "➕ Select roles to gain..." : "No roles set yet")
+							.setPlaceholder(ids.length ? "➕ Select role(s) to gain..." : "No roles set yet")
 							.setDisabled(ids.length < 1)
 							.setMinValues(1)
 							.setMaxValues(ids.length || 1)
@@ -78,7 +103,7 @@ exports.rolesMessagePayload = async function (rolesManager, guildId) {
 				...slicedRoles.map((ids, index) => {
 					return new MessageActionRow().addComponents(
 						new MessageSelectMenu().setCustomId(`remove-roles${exports.SAFE_DELIMITER}${index}`)
-							.setPlaceholder(ids.length ? "➖ Select roles to remove..." : "No roles set yet")
+							.setPlaceholder(ids.length ? "➖ Select role(s) to remove..." : "No roles set yet")
 							.setDisabled(ids.length < 1)
 							.setMinValues(1)
 							.setMaxValues(ids.length || 1)

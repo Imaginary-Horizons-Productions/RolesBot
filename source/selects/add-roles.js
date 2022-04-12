@@ -8,6 +8,7 @@ module.exports.execute = (interaction, [page]) => {
 		let added = interaction.values;
 		interaction.member.roles.add(added);
 		interaction.reply({ content: `Roles added: <@&${added.join(">, <@&")}>`, ephemeral: true });
+		//TODO update public roles message
 	} else {
 		interaction.reply({ content: "RolesBot cannot change your roles because you have one that is above it.", ephemeral: true });
 	}
