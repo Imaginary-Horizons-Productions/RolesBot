@@ -7,7 +7,11 @@ module.exports.execute = (interaction, [page]) => {
 	if (interaction.member.manageable) {
 		let removed = interaction.values;
 		interaction.member.roles.remove(removed);
-		interaction.reply({ content: `Roles removed: <@&${removed.join(">, <@&")}>`, ephemeral: true });
+		if (interaction.message.flags.has("EPHEMERAL")) {
+			interaction.update({ content: `Roles removed: <@&${removed.join(">, <@&")}>`, components: [], ephemeral: true });
+		} else {
+			interaction.reply({ content: `Roles removed: <@&${removed.join(">, <@&")}>`, ephemeral: true });
+		}
 	} else {
 		interaction.reply({ content: "RolesBot cannot change your roles because you have one that is above it.", ephemeral: true });
 	}

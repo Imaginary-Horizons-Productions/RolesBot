@@ -14,8 +14,8 @@ const client = new Client({
 	retryLimit: 5,
 	presense: {
 		activities: [{
-			type: "LISTENING",
-			name: "/commands"
+			type: "PLAYING",
+			name: "with /roles"
 		}]
 	},
 	intents: ["GUILDS", "GUILD_MEMBERS"]

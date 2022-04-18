@@ -1,20 +1,11 @@
-const { MessageActionRow, MessageSelectMenu } = require("discord.js");
+const { MessageActionRow, MessageSelectMenu, RoleManager } = require("discord.js");
 const fs = require("fs");
 
 exports.SAFE_DELIMITER = "→";
 
-const ROLES_WHITELISTS = require("./../saves/rolesWhitelist.json"); // { guildId: [roleId1, roleId2...]}
+const ROLES_WHITELISTS = require("./../saves/rolesWhitelist.json"); // { guildId: { roles: [roleId1, roleId2...], channelId, messageId } }
 
-exports.getRoles = function (guildId) {
-	return ROLES_WHITELISTS[guildId] || [];
-}
-
-exports.setRole = function (guildId, roleId) {
-	if (ROLES_WHITELISTS[guildId]) {
-		ROLES_WHITELISTS[guildId].push(roleId);
-	} else {
-		ROLES_WHITELISTS[guildId] = [roleId];
-	}
+function saveRolesWhitelist() {
 	if (!fs.existsSync("./saves")) {
 		fs.mkdirSync("./saves", { recursive: true });
 	}
@@ -25,20 +16,71 @@ exports.setRole = function (guildId, roleId) {
 	})
 }
 
-exports.deleteRole = function (guildId, roleId) {
-	if (ROLES_WHITELISTS[guildId]) {
-		ROLES_WHITELISTS[guildId] = ROLES_WHITELISTS[guildId].filter(id => id !== roleId);
-		if (!fs.existsSync("./saves")) {
-			fs.mkdirSync("./saves", { recursive: true });
-		}
-		fs.writeFile("./saves/rolesWhitelist.json", JSON.stringify(ROLES_WHITELISTS), "utf8", error => {
-			if (error) {
-				console.error(error);
-			}
-		})
+/**
+ * Get the ids of roles whitelisted by the guild
+ *
+ * @param {string} guildId
+ * @returns {string[]}
+ */
+exports.getRoles = function (guildId) {
+	return ROLES_WHITELISTS[guildId].roles || [];
+}
+
+/**
+ * Add a role to a guild's whitelist
+ *
+ * @param {string} guildId
+ * @param {string} roleId
+ */
+exports.setRole = function (guildId, roleId, roleManager) {
+	if (guildId in ROLES_WHITELISTS) {
+		ROLES_WHITELISTS[guildId].roles.push(roleId);
+	} else {
+		ROLES_WHITELISTS[guildId] = { roles: [roleId] };
+	}
+	saveRolesWhitelist();
+	updateRolesMessage(roleManager);
+}
+
+/**
+ * Remove a role from a guild's whitelist
+ *
+ * @param {string} guildId
+ * @param {string} roleId
+ * @param {RoleManager} roleManager
+ */
+exports.deleteRole = function (guildId, roleId, roleManager) {
+	if (guildId in ROLES_WHITELISTS) {
+		ROLES_WHITELISTS[guildId].roles = ROLES_WHITELISTS[guildId].roles.filter(id => id !== roleId);
+		saveRolesWhitelist();
+		updateRolesMessage(roleManager);
 	}
 };
 
+/**
+ * Set the channelId and messageId for the guild's public roles message
+ *
+ * @param {string} guildId
+ * @param {string} channelId
+ * @param {string} messageId
+ */
+exports.setRolesMessageIds = function (guildId, channelId, messageId) {
+	if (guildId in ROLES_WHITELISTS) {
+		ROLES_WHITELISTS[guildId].channelId = channelId;
+		ROLES_WHITELISTS[guildId].messageId = messageId;
+	} else {
+		ROLES_WHITELISTS[guildId] = { roles: [], channelId, messageId };
+	}
+	saveRolesWhitelist();
+}
+
+/**
+ * Get the payload for the roles message for the given guild
+ *
+ * @param {RoleManager} rolesManager
+ * @param {string} guildId
+ * @returns {MessagePayload}
+ */
 exports.rolesMessagePayload = async function (rolesManager, guildId) {
 	let roles = exports.getRoles(guildId);
 	let slicedRoles = [roles.slice(0, 25)];
@@ -55,6 +97,7 @@ exports.rolesMessagePayload = async function (rolesManager, guildId) {
 						value: id
 					})
 				} else {
+					exports.deleteRole(guildId, id);
 					return await options;
 				}
 			}, []);
@@ -63,29 +106,70 @@ exports.rolesMessagePayload = async function (rolesManager, guildId) {
 		}
 	})).then(roleOptions => {
 		return {
-			content: "Use the following select menus to modify your roles:",
+			content: `Use the following select menus to modify your roles. Available roles are: \n<@&${roles.join(">, <@&")}>`,
 			components: [
-				...slicedRoles.map((ids, index) => {
+				...roleOptions.map((optionSet, index) => {
 					return new MessageActionRow().addComponents(
 						new MessageSelectMenu().setCustomId(`add-roles${exports.SAFE_DELIMITER}${index}`)
-							.setPlaceholder(ids.length ? "➕ Select roles to gain..." : "No roles set yet")
-							.setDisabled(ids.length < 1)
+							.setPlaceholder(optionSet.length ? "➕ Select role(s) to gain..." : "No roles set yet")
+							.setDisabled(optionSet.length < 1)
 							.setMinValues(1)
-							.setMaxValues(ids.length || 1)
-							.setOptions(roleOptions[index])
+							.setMaxValues(optionSet.length || 1)
+							.setOptions(optionSet)
 					)
 				}),
-				...slicedRoles.map((ids, index) => {
+				...roleOptions.map((optionSet, index) => {
 					return new MessageActionRow().addComponents(
 						new MessageSelectMenu().setCustomId(`remove-roles${exports.SAFE_DELIMITER}${index}`)
-							.setPlaceholder(ids.length ? "➖ Select roles to remove..." : "No roles set yet")
-							.setDisabled(ids.length < 1)
+							.setPlaceholder(optionSet.length ? "➖ Select role(s) to remove..." : "No roles set yet")
+							.setDisabled(optionSet.length < 1)
 							.setMinValues(1)
-							.setMaxValues(ids.length || 1)
-							.setOptions(roleOptions[index])
+							.setMaxValues(optionSet.length || 1)
+							.setOptions(optionSet)
 					)
 				})
 			]
 		}
+	})
+}
+
+/**
+ * Get the guild's roles message
+ *
+ * @param {Guild} guild
+ * @returns {Message}
+ */
+async function getRoleMessage(guild) {
+	const guildId = guild.id;
+	if (guildId in ROLES_WHITELISTS) {
+		const { channelId, messageId } = ROLES_WHITELISTS[guildId];
+		if (channelId && messageId) {
+			let channel = await guild.channels.fetch(channelId);
+			return await channel.messages.fetch(messageId);
+		}
+	}
+}
+
+/**
+ * Updates the roles message of the specified guild
+ *
+ * @param {RoleManager} roleManager
+ */
+function updateRolesMessage(roleManager) {
+	getRoleMessage(roleManager.guild).then(message => {
+		exports.rolesMessagePayload(roleManager, roleManager.guild.id).then(payload => {
+			message?.edit(payload);
+		})
+	})
+}
+
+/**
+ * Removes the components from the now outdated roles message
+ *
+ * @param {Guild} guild
+ */
+exports.disableRolesMessage = function (guild) {
+	getRoleMessage(guild).then(message => {
+		message?.edit({ components: [] });
 	})
 }
