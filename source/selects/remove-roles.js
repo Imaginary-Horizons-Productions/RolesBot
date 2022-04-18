@@ -12,8 +12,6 @@ module.exports.execute = (interaction, [page]) => {
 		} else {
 			interaction.reply({ content: `Roles removed: <@&${removed.join(">, <@&")}>`, ephemeral: true });
 		}
-		interaction.reply({ content: `Roles removed: <@&${removed.join(">, <@&")}>`, ephemeral: true });
-		//TODO update public roles message
 	} else {
 		interaction.reply({ content: "RolesBot cannot change your roles because you have one that is above it.", ephemeral: true });
 	}
