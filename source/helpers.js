@@ -106,15 +106,15 @@ exports.rolesMessagePayload = async function (rolesManager, guildId) {
 		}
 	})).then(roleOptions => {
 		return {
-			content: `Use the following select menus to modify your roles. Available roles are: \n<@&${roles.join(">, <@&")}>`,
+			content: `Use the following select menus to modify your roles. Available roles are: \n${roles.length ? `<@&${roles.join(">, <@&")}>` : "None yet, use `/register-roles` to add some!"}`,
 			components: [
 				...roleOptions.map((optionSet, index) => {
 					return new MessageActionRow().addComponents(
 						new MessageSelectMenu().setCustomId(`add-roles${exports.SAFE_DELIMITER}${index}`)
 							.setPlaceholder(optionSet.length ? "➕ Select role(s) to gain..." : "No roles set yet")
-							.setDisabled(optionSet.length < 1)
+							.setDisabled(roles.length < 1)
 							.setMinValues(1)
-							.setMaxValues(optionSet.length || 1)
+							.setMaxValues(roles.length || 1)
 							.setOptions(optionSet)
 					)
 				}),
@@ -122,9 +122,9 @@ exports.rolesMessagePayload = async function (rolesManager, guildId) {
 					return new MessageActionRow().addComponents(
 						new MessageSelectMenu().setCustomId(`remove-roles${exports.SAFE_DELIMITER}${index}`)
 							.setPlaceholder(optionSet.length ? "➖ Select role(s) to remove..." : "No roles set yet")
-							.setDisabled(optionSet.length < 1)
+							.setDisabled(roles.length < 1)
 							.setMinValues(1)
-							.setMaxValues(optionSet.length || 1)
+							.setMaxValues(roles.length || 1)
 							.setOptions(optionSet)
 					)
 				})
