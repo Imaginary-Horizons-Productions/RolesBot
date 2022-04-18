@@ -23,7 +23,7 @@ function saveRolesWhitelist() {
  * @returns {string[]}
  */
 exports.getRoles = function (guildId) {
-	return ROLES_WHITELISTS[guildId].roles || [];
+	return ROLES_WHITELISTS[guildId]?.roles || [];
 }
 
 /**
