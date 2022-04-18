@@ -12,7 +12,7 @@ module.exports.execute = (interaction) => {
 		let registeredRole = interaction.options.getRole("role");
 		if (registeredRole.position < interaction.guild.me.roles.highest.position) {
 			if (!roles.includes(registeredRole.id)) {
-				setRole(interaction.guildId, registeredRole.id);
+				setRole(interaction.guildId, registeredRole.id, interaction.guild.roles);
 				interaction.reply({ content: `Server members can now use the bot to give or remove ${registeredRole} from themselves.`, ephemeral: true })
 			} else {
 				interaction.reply({ content: `The role ${registeredRole} has already been registered.`, ephemeral: true });
