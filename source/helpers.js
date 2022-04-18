@@ -144,8 +144,18 @@ async function getRoleMessage(guild) {
 	if (guildId in ROLES_WHITELISTS) {
 		const { channelId, messageId } = ROLES_WHITELISTS[guildId];
 		if (channelId && messageId) {
-			let channel = await guild.channels.fetch(channelId);
-			return await channel.messages.fetch(messageId);
+			let channel = await guild.channels.fetch(channelId).catch(error => {
+				if (error.code !== 10003) {
+					// ignore "Unknown Channel" errors, someone probably deleted the channel their roles message was in
+					console.error(error);
+				}
+			});
+			return await channel?.messages.fetch(messageId).catch(error => {
+				if (error.code !== 10008) {
+					// ignore "Unknown Message" errors, someone probably deleted their roles message
+					console.error(error);
+				}
+			});
 		}
 	}
 }
