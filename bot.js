@@ -32,6 +32,7 @@ const client = new Client({
 
 //#region Event Handlers
 client.on("ready", () => {
+	client.user.setActivity({ name: "with /roles" });
 	console.log(`Connected as ${client.user.tag}`);
 
 	(async () => {
