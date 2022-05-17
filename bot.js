@@ -58,14 +58,13 @@ client.on("interactionCreate", interaction => {
 			}
 		}
 
+		const [mainId, ...args] = interaction.customId.split(SAFE_DELIMITER);
 		if (interaction.isButton()) {
-			const [customId, ...args] = interaction.customId.split(SAFE_DELIMITER);
-			getButton(customId).execute(interaction, args);
+			getButton(mainId).execute(interaction, args);
 		}
 
 		if (interaction.isSelectMenu()) {
-			const [customId, ...args] = interaction.customId.split(SAFE_DELIMITER);
-			getSelect(customId).execute(interaction, args);
+			getSelect(mainId).execute(interaction, args);
 		}
 	} else {
 		interaction.reply({ content: "There are no roles to adjust in private messages.", ephemeral: true });
