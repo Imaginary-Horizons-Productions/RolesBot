@@ -12,7 +12,7 @@ const { SAFE_DELIMITER } = require("./source/helpers.js");
 //#region Executing Code
 const client = new Client({
 	retryLimit: 5,
-	presense: {
+	presence: {
 		activities: [{
 			type: "PLAYING",
 			name: "with /roles"
@@ -32,7 +32,6 @@ const client = new Client({
 
 //#region Event Handlers
 client.on("ready", () => {
-	client.user.setActivity({ name: "with /roles" });
 	console.log(`Connected as ${client.user.tag}`);
 
 	(async () => {
