@@ -1,7 +1,9 @@
 // Select Template Class
 module.exports = class Select {
-    constructor(nameInput, executeInput) {
-        this.name = nameInput;
-        this.execute = executeInput;
-    }
+	constructor(nameInput, executeInput) {
+		this.name = nameInput;
+		this.execute = executeInput;
+	}
+
+	execute(interaction, args) { };
 }

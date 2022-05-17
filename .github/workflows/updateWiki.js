@@ -1,7 +1,5 @@
 const fs = require('fs');
-const { injectConfigCommands, commandSets } = require('../../source/commands/_commandDictionary.js');
-
-injectConfigCommands(false);
+const { commandSets } = require('../../source/commands/_commandDictionary.js');
 
 let text = "";
 
