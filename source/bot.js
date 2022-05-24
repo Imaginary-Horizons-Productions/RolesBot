@@ -3,10 +3,10 @@ const { Client } = require("discord.js");
 const { REST } = require("@discordjs/rest");
 const { Routes } = require("discord-api-types/v9");
 
-const { getCommand, slashData } = require("./source/commands/_commandDictionary.js");
-const { getButton } = require("./source/buttons/_buttonDictionary.js");
-const { getSelect } = require("./source/selects/_selectDictionary.js");
-const { SAFE_DELIMITER } = require("./source/helpers.js");
+const { getCommand, slashData } = require("./commands/_commandDictionary.js");
+const { getButton } = require("./buttons/_buttonDictionary.js");
+const { getSelect } = require("./selects/_selectDictionary.js");
+const { SAFE_DELIMITER } = require("./helpers.js");
 //#endregion
 
 //#region Executing Code
@@ -21,13 +21,8 @@ const client = new Client({
 	intents: ["GUILDS", "GUILD_MEMBERS"]
 });
 
-(() => {
-	try {
-		client.login(require("./config/auth.json").token);
-	} catch (rejectMessage) {
-		console.error(rejectMessage);
-	}
-})()
+client.login(require("./config/auth.json").token)
+	.catch(console.error);
 //#endregion
 
 //#region Event Handlers
