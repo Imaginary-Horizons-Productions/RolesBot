@@ -2,7 +2,8 @@ const Command = require('../classes/Command.js');
 const { rolesMessagePayload, setRolesMessageIds, disableRolesMessage } = require('../helpers.js');
 
 const options = [];
-module.exports = new Command("roles-message", "(Manager) Post a message with the role selects", true, false, options);
+const subcommands = [];
+module.exports = new Command("roles-message", "(Manager) Post a message with the role selects", true, false, options, subcommands);
 
 module.exports.execute = async (interaction) => {
 	disableRolesMessage(interaction.guild);

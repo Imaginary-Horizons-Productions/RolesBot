@@ -2,7 +2,7 @@ const { SlashCommandBuilder } = require("@discordjs/builders");
 
 // Command Template Class
 module.exports = class Command {
-	constructor(nameInput, descriptionInput, managerCommandInput, premiumCommandInput, optionsInput) {
+	constructor(nameInput, descriptionInput, managerCommandInput, premiumCommandInput, optionsInput, subcommandsInput) {
 		this.name = nameInput;
 		this.description = descriptionInput;
 		this.managerCommand = managerCommandInput;

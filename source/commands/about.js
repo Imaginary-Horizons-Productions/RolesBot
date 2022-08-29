@@ -2,7 +2,8 @@ const { MessageEmbed } = require('discord.js');
 const Command = require('../classes/Command.js');
 
 const options = [];
-module.exports = new Command("about", "List information about RolesBot", false, false, options);
+const subcommands = [];
+module.exports = new Command("about", "List information about RolesBot", false, false, options, subcommands);
 
 module.exports.execute = (interaction) => {
 	interaction.reply({

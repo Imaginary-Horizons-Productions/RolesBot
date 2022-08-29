@@ -4,7 +4,8 @@ const { getRoles, setRole } = require('../helpers.js');
 const options = [
 	{ type: "Role", name: "role", description: "Mention the role to add", required: true, choices: [] }
 ];
-module.exports = new Command("register-role", "(Manager) Add a role the bot can give", true, false, options);
+const subcommands = [];
+module.exports = new Command("register-role", "(Manager) Add a role the bot can give", true, false, options, subcommands);
 
 module.exports.execute = (interaction) => {
 	let roles = getRoles(interaction.guildId);

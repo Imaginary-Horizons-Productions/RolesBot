@@ -2,7 +2,8 @@ const Command = require('../classes/Command.js');
 const { rolesMessagePayload } = require('../helpers.js');
 
 const options = [];
-module.exports = new Command("roles", "Open the roles get/remove interface", false, false, options);
+const subcommands = [];
+module.exports = new Command("roles", "Open the roles get/remove interface", false, false, options, subcommands);
 
 module.exports.execute = async (interaction) => {
 	let payload = await rolesMessagePayload(interaction.guild.roles, interaction.guildId);
