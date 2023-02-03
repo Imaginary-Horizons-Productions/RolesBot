@@ -17,11 +17,5 @@ Here's a quick rundown of RolesBot's features:
 ### Human Readable Error Messages
 ![image](https://user-images.githubusercontent.com/6503151/163852548-deed7345-e3fa-49ac-9571-a3de141d171b.png)
 
-## Features
-{features}
-
-## Features
-{features}
-
 ## Sponsors
 <!-- sponsors --><!-- sponsors -->
